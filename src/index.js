@@ -16,7 +16,6 @@ class Exercise extends React.Component {
 
     }
 
-
     setName(evt) {
         this.setState({
             name: evt.target.value
@@ -88,8 +87,74 @@ class Exercise extends React.Component {
     }
 }
 
+
+class Calc extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            value: 0
+        };
+        this.getCalc = this.getCalc.bind(this);
+        this.clear = this.clear.bind(this);
+
+    }
+
+    setValue(evt) {
+        this.setState({
+            value: evt.target.value
+        })
+    }
+
+    clear() {
+        this.setState({
+            value: 0
+        })
+    }
+
+    async getCalc() {
+        try {
+            const response = await fetch(
+                `http://localhost:8080/calc`
+            );
+            const exercise = await response.json();
+            console.log(exercise)
+            this.setState({
+                value: exercise
+            });
+
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    postIt(state) {
+        console.log(state);
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(state)
+        };
+        fetch('http://localhost:8080/calc', requestOptions);
+    }
+
+    render() {
+
+        return (
+            <div>
+                <p>{this.state.value}</p>
+                <input type="number" onChange={evt => this.setValue(evt)}/>
+                <button type="button" onClick={() => this.postIt(this.state)}>Post It</button>
+                <button type="button" onClick={this.getCalc}>Get It</button>
+                <button type="button" onClick={this.clear}>Clear</button>
+            </div>
+        );
+    }
+}
+
 // ========================================
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(<Exercise/>);
+root.render(<Calc/>);
+
+
 
